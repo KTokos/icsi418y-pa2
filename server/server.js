@@ -45,7 +45,7 @@ const users = db.collection("users");
 
 // ---------- App Logic ----------
 
-// Function to recieve POST requests at signup endpoint
+// Function to receive POST requests at signup endpoint
 app.post("/api/signup", async (req, res) => {
     const formData = req.body;
 
@@ -127,4 +127,51 @@ app.post("/api/signup", async (req, res) => {
 
         return;
     }
-})
+});
+
+// Function to receive POST requests at login endpoint
+app.post("/api/login", async (req, res) => {
+    const formData = req.body;
+
+    // Log data for testing
+    // console.log(formData);
+
+    // Verify that all information was received
+    if (formData.username === '') {
+        res.status(400).json({
+            message: "Username is required."
+        });
+
+        return;
+    } else if (formData.password === '') {
+        res.status(400).json({
+            message: "Password is required."
+        });
+
+        return;
+    }
+    // No field is empty, continue
+    
+    // Check database for matching username and password
+    const confirmUser = await users.findOne({
+        username: formData.username,
+        password: formData.password
+    });
+
+    // Verify valid credentials
+    if (confirmUser != null) {
+        // Correct credntials, return success
+        res.status(201).json({
+            message: "Successful login."
+        });
+
+        return;
+    } else {
+        // Invalid credentials
+        res.status(400).json({
+            message: "Invalid credentials, try again."
+        });
+
+        return;
+    }
+});
